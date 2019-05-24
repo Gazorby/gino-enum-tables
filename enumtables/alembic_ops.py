@@ -1,5 +1,6 @@
 
 from alembic.operations import Operations, MigrateOperation
+import alembic.autogenerate.render
 from sqlalchemy.orm.session import Session
 
 @Operations.register_operation("insert")
@@ -43,3 +44,11 @@ def delete(operations, operation):
 	sess = Session(bind=operations.get_bind())
 	for item in operation.data:
 		sess.query(operation.klass).filter_by(**item).delete()
+
+@alembic.autogenerate.render.renderers.dispatch_for(InsertOp)
+def render_sync_enum_value_op(autogen_context, op):
+    return 'op.insert({}, {!r})'.format(op.klass, op.data)
+
+@alembic.autogenerate.render.renderers.dispatch_for(DeleteOp)
+def render_sync_enum_value_op(autogen_context, op):
+    return 'op.delete({}, {!r})'.format(op.klass, op.data)

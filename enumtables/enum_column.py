@@ -10,13 +10,13 @@ def convert_case(name):
 
 class EnumType(types.TypeDecorator):
 	impl = types.String
-	def __init__(self, enum, *args, **kwargs):
+	def __init__(self, enumTable, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.__enum = enum
+		self.__enum__ = enumTable
 	def process_bind_param(self, value, dialect):
 		return value.name
 	def process_result_value(self, value, dialect):
-		return self.__enum[value]
+		return self.__enum__.__enum__[value]
 
 class EnumColumn(sa.Column):
 	"""
@@ -37,7 +37,7 @@ class EnumColumn(sa.Column):
 
 	On a valued instance, its value is an instance of the enum type.
 	"""
-	def __init__(self, enum, tablename = None, *args, **kwargs):
+	def __init__(self, enumTable, *args, **kwargs):
 		"""
 		Constructor for an enum column
 
@@ -52,7 +52,7 @@ class EnumColumn(sa.Column):
 		
 		All remaining arguments are passed to the constructor of ``sqlalchemy.Column``.
 		"""
-		tp = EnumType(enum)
 		tn = tablename if tablename else convert_case(enum.__name__)
-		fk = sa.ForeignKey(tn + '.item_id')
+		fk = sa.ForeignKey(enumTable.item_id)
+		tp = EnumType(enumTable)
 		super().__init__(tp, fk, *args, **kwargs)
