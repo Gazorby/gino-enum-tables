@@ -16,7 +16,7 @@ stages:
 sdist:
   <<: *dist_job
   variables:
-    SETUP_APPEND: --formats=gztar,bztar,zip
+    SETUP_APPEND: --formats=gztar,zip
 
 bdist_wheel:
   <<: *dist_job
@@ -27,7 +27,7 @@ bdist_egg:
 bdist:
   <<: *dist_job
   variables:
-    SETUP_APPEND: --formats=gztar,bztar,zip
+    SETUP_APPEND: --formats=gztar,zip
 
 twine_check:
   stage: check
