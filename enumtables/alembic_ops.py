@@ -3,6 +3,8 @@ from alembic.operations import Operations, MigrateOperation
 import alembic.autogenerate.render
 from sqlalchemy.orm.session import Session
 
+__all__ = ["InsertOp", "DeleteOp"]
+
 @Operations.register_operation("insert")
 class InsertOp(MigrateOperation):
 
@@ -35,15 +37,15 @@ class DeleteOp(MigrateOperation):
 
 @Operations.implementation_for(InsertOp)
 def insert(operations, operation):
-	sess = Session(bind=operations.get_bind())
+    sess = Session(bind=operations.get_bind())
     sess.add_all(operation.klass(**item) for item in operation.data)
 
 
 @Operations.implementation_for(DeleteOp)
 def delete(operations, operation):
-	sess = Session(bind=operations.get_bind())
-	for item in operation.data:
-		sess.query(operation.klass).filter_by(**item).delete()
+    sess = Session(bind=operations.get_bind())
+    for item in operation.data:
+        sess.query(operation.klass).filter_by(**item).delete()
 
 @alembic.autogenerate.render.renderers.dispatch_for(InsertOp)
 def render_sync_enum_value_op(autogen_context, op):
