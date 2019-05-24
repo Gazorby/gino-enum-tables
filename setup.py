@@ -9,10 +9,6 @@ def reqs():
 	with open('requirements.txt') as f:
 		return f.read()
 
-def extra_reqs():
-	with open('extras_req.txt') as f:
-		return f.read()
-
 
 st.setup(
 	name = "SqlAlchemy Enum Tables",
@@ -25,7 +21,9 @@ st.setup(
 	author_email = "neshiraini+sqlalchemy@heptacle.fr",
 	url = "https://git.heptacle.fr/neshiraini/sqlalchemy-enum-tables",
 	install_requires = reqs(),
-	extras_require = extra_reqs(),
+	extras_require = {
+		"Alembic" : ["alembic",],
+	},
 	include_package_data = True,
 	keywords = "sql sqlalchemy orm enum alembic migrations database relational",
 	classifiers = [
