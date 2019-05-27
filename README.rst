@@ -54,11 +54,12 @@ How to use with SqlAlchemy
 How to use with Alembic
 -----------------------
 
-Simply add::
+First add::
 
 	import enumtables
 
-at the begining of your ``env.py`` file.
+at the begining of your ``env.py`` file,
+then add the same line in the imports of your ``script.py.mako`` file.
 The package uses Alembic's standard hooks to take care of migration generation.
 
 Don't forget to review the migrations afterwards.

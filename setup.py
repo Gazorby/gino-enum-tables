@@ -13,7 +13,7 @@ def reqs():
 st.setup(
 	name = "SqlAlchemy Enum Tables",
 	packages = st.find_packages(include = 'enumtables.*'),
-	version = "0.0.1",
+	version = "1.0.0",
 	description = "Making Python enums into SQLAlchemy tables with support for Alembic migrations",
 	long_description=readme(),
 	long_description_content_type='text/x-rst',
