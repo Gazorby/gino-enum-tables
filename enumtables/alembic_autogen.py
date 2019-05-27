@@ -5,7 +5,7 @@ from . import enum_column
 from . import alembic_ops
 
 def get_declared_enums(metadata, schema, default):
-	types = set(column.type for table in metadata.tables.values() for column in table.columns if (isinstance(column.type, enum_column.EnumColumn) and schema == (column.type.schema or default)))
+	types = set(column.type for table in metadata.tables.values() for column in table.columns if (isinstance(column, enum_column.EnumColumn) and table.schema == schema))
 	return [(typ.__enum__, typ.__enum__.__tablename__, frozenset(typ.__enum__.__enum__.__members__)) for typ in types]
 
 def is_table_present(tablename, connection):
