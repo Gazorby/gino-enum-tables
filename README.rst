@@ -115,6 +115,7 @@ Which means, you can pass anything (like a column) exactly as you would defined 
 
     BetterEnumTable = et.EnumTable(
         MyEnum,
+		Base,
 
         # tablename is turned into __tablename__
         tablename = "better_enum",
