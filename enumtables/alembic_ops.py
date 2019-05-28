@@ -48,8 +48,8 @@ def delete(operations, operation):
 
 @alembic.autogenerate.render.renderers.dispatch_for(EnumInsertOp)
 def render_sync_enum_value_op(autogen_context, op):
-	return 'op.enum_insert({}, {!r})'.format(op.tablename, op.data)
+	return 'op.enum_insert("{}", {!r})'.format(op.tablename, op.data)
 
 @alembic.autogenerate.render.renderers.dispatch_for(EnumDeleteOp)
 def render_sync_enum_value_op(autogen_context, op):
-	return 'op.enum_delete({}, {!r})'.format(op.tablename, op.data)
+	return 'op.enum_delete("{}", {!r})'.format(op.tablename, op.data)
