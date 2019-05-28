@@ -6,7 +6,7 @@ from . import alembic_ops
 
 def get_declared_enums(metadata, schema, default):
 	types = set(column.type for table in metadata.tables.values() for column in table.columns if (isinstance(column, enum_column.EnumColumn) and table.schema == schema))
-	return [(typ.__enum__, typ.__enum__.__tablename__, frozenset(typ.__enum__.__enum__.__members__)) for typ in types]
+	return {typ.__enum__.__tablename__ : frozenset(typ.__enum__.__enum__.__members__) for typ in types}
 
 def is_table_present(tablename, connection):
 	try:
@@ -24,7 +24,7 @@ def compare_enums(autogen_context, upgrade_ops, schema_names):
 			schema = default
 
 		enums = get_declared_enums(autogen_context.metadata, schema, default)
-		for klass, table, values in enums:
+		for table, values in enums.items():
 			if is_table_present(table, autogen_context.connection):
 				items = {r[0] for r in autogen_context.connection.execute("SELECT item_id FROM {}".format(table))}
 				to_add = values - items
