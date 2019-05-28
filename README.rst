@@ -30,7 +30,7 @@ When to use
    If you only use SqlAlchemy Core... *deal with it*.
 3. Better used for frequently updated enumeration classes.
 4. **Do not** use with another package that provides
-   ``op.insert`` and ``op.delete`` operations in Alembic.
+   ``op.enum_insert`` and ``op.enum_delete`` operations in Alembic.
 
 How to use with SqlAlchemy
 --------------------------
@@ -63,6 +63,21 @@ How to use with SqlAlchemy
         # It will automatically create a ForeignKeyConstraint referencing the enum table.
         enum_value = et.EnumColumn(MyEnumTable, primary_key = True)
 
+        # When valued (on an instance of MyModel), enum_value will be an instance of MyEnum.
+
+First, the ``EnumTable`` factory takes the enum class and the declarative base class
+to create the actual ORM class. Then this ORM class is passed to the ``EnumColumn`` class
+to create the column linked to the enum table.
+The column behaves just as if it had SqlAlchemy's own ``Enum`` type.
+
+On the implementation side, ``EnumTable`` is not a class,
+it's a factory function that performs Python black magic
+to create a subclass of the declarative base, and set it up to be a DB table
+containing the enum items (actually it just has one column ``item_id`` of type String).
+
+``EnumColumn`` is a subclass of SqlAlchemy's ``Column`` that gets initialized
+with a custom type and a foreign key to the enum table.
+
 How to use with Alembic
 -----------------------
 
@@ -75,44 +90,11 @@ then add the same line in the imports of your ``script.py.mako`` file.
 The package uses Alembic's standard hooks to take care of migration generation.
 
 Don't forget to review the migrations afterwards.
-Especially make sure of the following:
-
-1. The class name in the ``op.insert`` and ``op.delete`` commands is the proper name of the table class
-2. The table class is properly imported in the migration script
-3. If the table did not exist before, the ``op.insert`` commands are located *after* the corresponding ``op.create_table`` command.
+Especially make sure that, if the table did not exist before,
+the ``op.enum_insert`` commands are located *after* the corresponding ``op.create_table`` command.
 
 Other uses
 -----------
-
-General purpose data migrations in Alembic
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The ``enumtables`` package adds two migration operations to Alembic:
-``op.insert`` and ``op.delete``, used for an SQL ``INSERT`` and ``DELETE`` respectively.
-
-Both take the ORM class as a first parameter, and a list of dictionnaries as the second.
-Each dictionnary will produce an ``INSERT`` or ``DELETE`` statement
-where the keys are the columns and the values are the values.
-
-For instance ``op.insert(MyEnumTable, [{"item_id" : "HELLO"}, {"item_id" : "WORLD"}]``
-with the ``MyEnumTable`` from the example above will produce:
-
-.. code-block:: sql
-
-    INSERT INTO my_enum (item_id) VALUES ('HELLO');
-    INSERT INTO my_enum (item_id) VALUES ('WORLD');
-
-and ``op.delete(MyEnumTable, [{"item_id" : "HELLO"}, {"item_id" : "WORLD"}]``
-will produce:
-
-.. code-block:: sql
-
-    DELETE FROM my_enum WHERE item_id = 'HELLO';
-    DELETE FROM my_enum WHERE item_id = 'WORLD';
-
-Note that there is no operation to produce an ``UPDATE`` statement
-because the main purpose of this package is not to provide data migration,
-but to handle enumerations tables, and ``UPDATE`` is not needed for that purpose.
 
 Using the enum table class directly
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
