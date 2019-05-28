@@ -36,14 +36,18 @@ class EnumDeleteOp(MigrateOperation):
 
 @Operations.implementation_for(EnumInsertOp)
 def insert(operations, operation):
+	if not operation.data:
+		return
 	values = ', '.join("('" + v + "')" for v in operation.data)
-	txt = 'INSERT INTO {tn} (item_id) VALUES {vl};'.format(tn = operation.tablename, vl = values)
+	txt = 'INSERT INTO {tn} (item_id) VALUES {vl}'.format(tn = operation.tablename, vl = values)
 	operations.execute(txt)
 
 @Operations.implementation_for(EnumDeleteOp)
 def delete(operations, operation):
+	if not operation.data:
+		return
 	values = ', '.join("'" + v + "'" for v in operation.data)
-	txt = 'DELETE FROM {tn} WHERE item_id IN ({vl});'.format(tn = operation.tablename, vl = values)
+	txt = 'DELETE FROM {tn} WHERE item_id IN ({vl})'.format(tn = operation.tablename, vl = values)
 	operations.execute(txt)
 
 @alembic.autogenerate.render.renderers.dispatch_for(EnumInsertOp)
