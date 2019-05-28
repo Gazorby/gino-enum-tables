@@ -30,10 +30,10 @@ def compare_enums(autogen_context, upgrade_ops, schema_names):
 				to_add = values - items
 				to_remove = items - values
 				if to_add:
-					upgrade_ops.ops.append(alembic_ops.InsertOp(klass, [{"item_id" : v} for v in to_add]))
+					upgrade_ops.ops.append(alembic_ops.EnumInsertOp(table, list(to_add)))
 				if to_remove:
-					upgrade_ops.ops.append(alembic_ops.DeleteOp(klass, [{"item_id" : v} for v in to_remove]))
+					upgrade_ops.ops.append(alembic_ops.EnumDeleteOp(table, list(to_remove)))
 			else:
-				upgrade_ops.ops.append(alembic_ops.InsertOp(klass, [{"item_id" : v} for v in values]))
+				upgrade_ops.ops.append(alembic_ops.EnumInsertOp(table, list(values)))
 
 

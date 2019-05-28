@@ -1,62 +1,55 @@
 
 from alembic.operations import Operations, MigrateOperation
 import alembic.autogenerate.render
-from sqlalchemy import sql
 
-__all__ = ["InsertOp", "DeleteOp"]
+__all__ = ["EnumInsertOp", "EnumDeleteOp"]
 
-@Operations.register_operation("insert")
-class InsertOp(MigrateOperation):
+@Operations.register_operation("enum_insert")
+class EnumInsertOp(MigrateOperation):
 
-	def __init__(self, klass, data = []):
-		self.klass = klass
+	def __init__(self, tablename, data = []):
+		self.tablename = tablename
 		self.data = data
 
 	@classmethod
-	def insert(cls, operations, klass, data = []):
-		op = cls(klass, data)
+	def enum_insert(cls, operations, tablename, data = []):
+		op = cls(tablename, data)
 		return operations.invoke(op)
 
 	def reverse(self):
-		return DeleteOp(self.klass, self.data)
+		return EnumDeleteOp(self.tablename, self.data)
 
-@Operations.register_operation("delete")
-class DeleteOp(MigrateOperation):
+@Operations.register_operation("enum_delete")
+class EnumDeleteOp(MigrateOperation):
 
-	def __init__(self, klass, data = []):
-		self.klass = klass
+	def __init__(self, tablename, data = []):
+		self.tablename = tablename
 		self.data = data
 
 	@classmethod
-	def delete(cls, operations, klass, data = []):
-		op = cls(klass, data)
+	def enum_delete(cls, operations, tablename, data = []):
+		op = cls(tablename, data)
 		return operations.invoke(op)
 
 	def reverse(self):
-		return InsertOp(self.klass, self.data)
+		return EnumInsertOp(self.tablename, self.data)
 
-@Operations.implementation_for(InsertOp)
+@Operations.implementation_for(EnumInsertOp)
 def insert(operations, operation):
-	for item in operation.data:
-		items = item.items()
-		columns = ', '.join(i[0] for i in items)
-		values = [i[1] for i in items]
-		txt = sql.text('INSERT INTO {tn} ({cn}) VALUES ({vl});'.format(tn = operation.klass.__tablename__, cn = columns, vl = ', '.join(':' + i[0] for i in items)))
-		operations.execute(txt.bindparams(**item))
+	values = ', '.join("('" + v + "')" for v in operation.data)
+	txt = 'INSERT INTO {tn} (item_id) VALUES {vl};'.format(tn = operation.tablename, vl = values)
+	operations.execute(txt)
 
-@Operations.implementation_for(DeleteOp)
+@Operations.implementation_for(EnumDeleteOp)
 def delete(operations, operation):
-	for item in operation.data:
-		items = item.items()
-		columns = ', '.join(i[0] for i in items)
-		values = [i[1] for i in items]
-		txt = sql.text('DELETE FROM {tn} WHERE 1=1 AND {fl};'.format(tn = operation.klass.__tablename__, fl = ' AND '.join(i[0] + ' = :' + i[0] for i in items) ))
-		operations.execute(txt.bindparams(**item))
+	values = ', '.join("'" + v + "'" for v in operation.data)
+	txt = 'DELETE FROM {tn} WHERE item_id IN ({vl});'.format(tn = operation.tablename, vl = values)
+	operations.execute(txt)
 
-@alembic.autogenerate.render.renderers.dispatch_for(InsertOp)
+@alembic.autogenerate.render.renderers.dispatch_for(EnumInsertOp)
 def render_sync_enum_value_op(autogen_context, op):
-	return 'op.insert({}, {!r})'.format(op.klass.__name__, op.data)
+	return 'op.enum_insert({}, {!r})'.format(op.tablename, op.data)
 
-@alembic.autogenerate.render.renderers.dispatch_for(DeleteOp)
+@alembic.autogenerate.render.renderers.dispatch_for(EnumDeleteOp)
 def render_sync_enum_value_op(autogen_context, op):
-	return 'op.delete({}, {!r})'.format(op.klass.__name__, op.data)
+	return 'op.enum_delete({}, {!r})'.format(op.tablename, op.data)
