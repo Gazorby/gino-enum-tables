@@ -13,6 +13,8 @@ class EnumType(types.TypeDecorator):
 	def __init__(self, enumTable = None, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.__enum__ = enumTable
+	def __repr__(self):
+		return repr(self.impl)
 	def process_bind_param(self, value, dialect):
 		return value.name
 	def process_result_value(self, value, dialect):
