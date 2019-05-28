@@ -8,7 +8,7 @@ def convert_case(name):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
-def EnumTable(enum, declBase, name = None, tablename = None, doc = None):
+def EnumTable(enum, declBase, name = None, tablename = None, doc = None, **kwargs):
 	"""
 	Create a table for a Python enumeration
 
@@ -29,6 +29,8 @@ def EnumTable(enum, declBase, name = None, tablename = None, doc = None):
 		A docstring to add to the class.
 		If left to ``None``, no docstring will be added.
 	
+	Additional keyword parameters become members of the class.
+	
 	Returns
 	-------
 	table : declBase
@@ -41,6 +43,7 @@ def EnumTable(enum, declBase, name = None, tablename = None, doc = None):
 		"__tablename__" : tablename if tablename else convert_case(enum.__name__),
 		"__enum__" : enum,
 		"item_id" : sa.Column(sa.String, primary_key = True),
+		**kwargs
 	}
 	if doc:
 		namespace["__doc__"] = doc
