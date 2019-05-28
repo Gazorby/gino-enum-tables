@@ -38,7 +38,7 @@ twine_check:
     - sdist
     - bdist_wheel
     - bdist_egg
-    - bdist
+    # - bdist
 
 twine_upload_test:
   stage: upload
@@ -49,7 +49,7 @@ twine_upload_test:
     - sdist
     - bdist_wheel
     - bdist_egg
-    - bdist
+    # - bdist
   when: manual
 
 pack_dists:
@@ -65,5 +65,5 @@ pack_dists:
     - sdist
     - bdist_wheel
     - bdist_egg
-    - bdist
+    # - bdist
   when: manual
