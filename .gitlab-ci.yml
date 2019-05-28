@@ -16,7 +16,7 @@ stages:
 sdist:
   <<: *dist_job
   variables:
-    SETUP_APPEND: --formats=gztar,zip
+    SETUP_APPEND: --formats=gztar
 
 bdist_wheel:
   <<: *dist_job
@@ -24,7 +24,7 @@ bdist_wheel:
 bdist_egg:
   <<: *dist_job
 
-bdist:
+.bdist:
   <<: *dist_job
   variables:
     SETUP_APPEND: --formats=gztar,zip
