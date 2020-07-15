@@ -32,6 +32,12 @@ When to use
 3. **Do not** use with another package that provides
    ``op.enum_insert`` and ``op.enum_delete`` operations in Alembic.
 
+Installation
+------------
+::
+
+    pip install gino-enum-tables
+
 How to use with GINO
 ----------------------
 
