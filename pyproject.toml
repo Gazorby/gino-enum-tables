@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "sqlalchemy-core-enum-tables"
+name = "gino-enum-tables"
 packages = [
     { include = "enumtables" }
 ]
