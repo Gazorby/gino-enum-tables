@@ -1,7 +1,7 @@
 GINO Enumeration Tables
 ====================================
 
-This is a port of `SqlAlchemy Enum Tables <https://git.heptacle.fr/neshiraini/sqlalchemy-enum-tables>`__ to support SQLAlchemy core
+This is a port of `SqlAlchemy Enum Tables <https://git.heptacle.fr/neshiraini/sqlalchemy-enum-tables>`__ to support `GINO orm <https://github.com/python-gino/gino>`__
 
 SQLAlchemy has built-in ``enum.Enum`` support,
 via its column type ``sqlalchemy.Enum``.
@@ -32,13 +32,15 @@ When to use
 3. **Do not** use with another package that provides
    ``op.enum_insert`` and ``op.enum_delete`` operations in Alembic.
 
-How to use with SqlAlchemy
---------------------------
+How to use with GINO
+----------------------
 
 ::
 
     import enum
-    import sqlalchemy as sa
+
+    # Gino instance
+    from . import db
 
     import enumtables as et
 
@@ -48,24 +50,24 @@ How to use with SqlAlchemy
         WORLD = "WORLD"
 
     # Create the enumeration table
-    # Pass your enum class and the SQLAlchemy declarative base to enumtables.EnumTable
-    MyEnumTable = et.EnumTable(MyEnum)
+    # Pass your enum class and the GINO base model to enumtables.EnumTable
+    MyEnumTable = et.EnumTable(MyEnum, db.Model)
 
     # Create a model class that uses the enum
     class MyModel(Base):
         __tablename__ = "my_model"
         # Pass the enum table (not the enum class) to enumtables.EnumType
-        # It replaces sqlalchemy.Column, but aside from the enum table,
-        # it can take the same parameters.
-        # It will automatically create a ForeignKeyConstraint referencing the enum table.
-        enum_value = sa.Column(EnumType(MyEnumTable), sa.ForeignKey('my_enum_table.item_id') primary_key = True)
+        # Add the foreign key to the enum table
+        enum_value = db.Column(et.EnumType(MyEnumTable), db.ForeignKey('my_enum_table.item_id') primary_key = True)
 
         # When valued (on an instance of MyModel), enum_value will be an instance of MyEnum.
 
-First, the ``EnumTable`` factory takes the enum class and the declarative base class
-to create the actual ORM class. Then this ORM class is passed to the ``EnumType`` custom type class
+First, the ``EnumTable`` factory takes the enum class and the base GINO model class
+to create the actual ORM class. Then this ORM class is passed to the ``EnumType`` custom type class, along with a ForeignKey to the enum table,
 to create the SQLAlchemy column linked to the enum table.
 The column behaves just as if it had SqlAlchemy's own ``Enum`` type.
+
+Note that the ForeignKey points to 'my_enum_table.item_id'. If the tablename argument isn't passed to EnumTable, the table name is created from the Enum name by doing a camelCase to snake_case conversion. 'item_id' is the primary key of the enum table (my_enum_table) holding enum values.
 
 On the implementation side, ``EnumTable`` is not a class,
 it's a factory function that performs Python black magic
