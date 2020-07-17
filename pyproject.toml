@@ -3,7 +3,7 @@ name = "gino-enum-tables"
 packages = [
     { include = "enumtables" }
 ]
-version = "1.0.4"
+version = "1.0.5"
 description = "Support for storing enum values in a table instead of a type"
 authors = ["Gazorby <gazorby@pm.me>", "Nathan/Eilisha Shiraini <neshiraini@heptacle.fr>"]
 keywords = ["enum", "table", "type", "orm", "sqlalchemy", "python3"]
