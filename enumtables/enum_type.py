@@ -7,7 +7,7 @@ __all__ = ["EnumType"]
 class EnumType(types.TypeDecorator):
     impl = types.String
 
-    def __init__(self, *args, enum_table=None, **kwargs):
+    def __init__(self, enum_table=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__enum__ = enum_table
 
