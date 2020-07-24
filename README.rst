@@ -85,7 +85,7 @@ How to use with Alembic
 
 First add::
 
-    import enumtables
+    from enumtables import alembic_ops
 
 at the begining of your ``env.py`` file,
 then add the same line in the imports of your ``script.py.mako`` file.
