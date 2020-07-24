@@ -1,8 +1,7 @@
 import alembic.autogenerate
 
-from .enum_type import EnumType
+from enumtables.enum_type import EnumType
 from . import alembic_ops
-
 
 def get_declared_enums(metadata):
     types = set(
