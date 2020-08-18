@@ -1,8 +1,10 @@
 GINO Enumeration Tables
 ====================================
 
-.. image:: https://img.shields.io/pypi/l/gino-enum-tables
-.. image:: https://img.shields.io/pypi/v/gino-enum-tables
+|a| |b|
+
+.. |a| image:: https://img.shields.io/pypi/l/gino-enum-tables
+.. |b| image:: https://img.shields.io/pypi/v/gino-enum-tables
 
 This is a port of `SqlAlchemy Enum Tables <https://git.heptacle.fr/neshiraini/sqlalchemy-enum-tables>`__ to support `GINO orm <https://github.com/python-gino/gino>`__
 
